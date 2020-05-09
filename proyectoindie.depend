@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1588739182 source:c:\users\equipo\desktop\proyectoindie\main.cpp
+	<iostream>
+	<fstream>
+	<time.h>
+	<stdlib.h>
+	<iomanip>
+	<windows.h>
+
