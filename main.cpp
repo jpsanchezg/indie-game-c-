@@ -1,16 +1,19 @@
 //hecho por juan pablo sanchez
 #include <iostream>
 #include <fstream>
-#include <time.h>
 #include <stdlib.h>
 #include <iomanip>
 #include <windows.h>
 #define maxin 100
 using namespace std;
 void datosJugadores (struct player jugadores [maxin],int numjug);
-void mapaJugadores(struct player jugadores [maxin],int numjug, struct mapa escaleras[maxin],struct mapa resvaladeras[maxin], string tablero[maxin][maxin],int tamx,int tamy,int numeros[maxin][maxin],struct posi poss[maxin],struct mapa posiciontablero[maxin],int TP);
-void jugarMapaJugadores(struct player jugadores [maxin],int numjug, struct mapa escaleras[maxin],struct mapa resvaladeras[maxin], string tablero[maxin][maxin],int tamx,int tamy,int numeros[maxin][maxin],struct posi poss[maxin], struct jugador jugadas[maxin],struct maps jugs[maxin]);
-void vistaTablero(string tablero[maxin][maxin],int tamx,int tamy,struct maps jugs[maxin]);
+void presentarJugadores (struct player jugadores [maxin],int numjug);
+void PosicionJugadores (struct player jugadores [maxin],int numjug);
+void presentarJugadoresClasificados (struct player jugadores [maxin],int numjug);
+
+void mapaJugadores(struct player jugadores [maxin],int numjug,struct maps tablero[][maxin],int tam,struct posi poss[maxin],struct mapa posiciontablero[maxin],int TP);
+void jugarMapaJugadores(struct player jugadores [maxin],int numjug,struct maps tablero[maxin][maxin],int tam,struct posi poss[maxin], struct jugador jugadas[maxin],int n);
+void vistaTablero( struct maps tablero[][maxin],int tam);
 void buscarposi(int numeros[maxin][maxin],struct player jugadores [maxin],int tamx, int tamy,struct posi poss[maxin]);
 struct player
 {
@@ -31,55 +34,95 @@ struct mapa
     int posini;
     string codigo;
     int posfinal;
-    string codigoinicio;
-    string codigobajada;
 };
 struct posi
 {
+    char codigo;
     int numero,x,y;
+
+};
+struct maps
+{
+    int numero;
+    char codigo;
+    int posfinal;
+    int xfinal;
+    int yfinal;
+    char jug1;
+    char jug2;
+    char jug3;
+    char jug4;
 };
 struct jugador
 {
     string color;
     int dado;
 };
-struct maps
-{
-    char ju;
-};
+
 int main()
 {
 
-    int numjug=4,opc=0,tamy=8,tamx=8,modo=0,TP = 17,TL=21;
+    int numjug=4,opc=0,tam=8,modo=0,TP = 17,TL=21,n=0;
     struct player jugadores[numjug];
     struct mapa posiciontablero[TP]= { {4,"Escalera",20}, {5,"Escalera",10}, {7,"Escalera",23}, {22,"Escalera",39}, {18,"Escalera",35}, {5,"Escalera",10}, {27,"Escalera",37}, {41,"Escalera",58}, {42,"Escalera",53}, {49,"Escalera",62}, {34,"Rodadero",2}, {38,"Rodadero",3}, {43,"Rodadero",23}, {46,"Rodadero",33}, {57,"Rodadero",44}, {43,"Rodadero",23}, {59,"Rodadero",46} };
     struct mapa escaleras[maxin];
-    struct maps jugs[numjug];
     struct jugador jugadas[TL] = { {"Blanco",3},{"Azul",5},{"Verde",3},{"Rojo",3},{"Blanco",3},{"Azul",4},{"Verde",1},{"Rojo",4},{"Blanco",3},{"Azul",1},{"Verde",5},{"Rojo",3},{"Blanco",4},{"Azul",4},{"Verde",1},{"Rojo",2},{"Blanco",4},{"Azul",4},{"Verde",6},{"Rojo",6}};
-    struct mapa resvaladeras[maxin];
-    string tablero[maxin][maxin];
+    struct maps tablero[maxin][maxin];
     struct posi poss[maxin];
-    int numeros [maxin][maxin] ;
-    srand(time(NULL));
-    cout << "hola a este nuevo juego: " << endl;
-    cout << "menu:" << endl;
-    cout<<"1. jugar"<<endl;
-    cout<<"2. salir"<<endl;
-    cin>>opc;
-    if(opc==1)
+    bool salir=false;
+    datosJugadores(jugadores,numjug);//agrega a los jugadores a la estructura player
+    mapaJugadores( jugadores, numjug, tablero, tam, poss,posiciontablero, TP);
+    do
     {
-        cout<<"Que modo quieren jugar?"<<endl;
-        cout<<"1. Generar mundo"<<endl;
-        cout<<"2. aleatorio"<<endl;
-        cin>>modo;
-        if(modo== 1)
+        cout<<"Menu principal"<<endl<<endl;
+        cout<<"Digite el numero que desea"<<endl<<endl;
+        cout<<"1: Presentar jugadores"<<endl;
+        cout<<"2: Posicion de los jugadores"<<endl;
+        cout<<"3: Mostrar el tablero"<<endl;
+        cout<<"4: Simular jugada"<<endl;
+        cout<<"5: Mostrar clasificacion"<<endl;
+        cout<<"6 Salir"<<endl;
+
+        cin>>opc;
+        if(opc == 1)
         {
-            datosJugadores(jugadores,numjug);
-            mapaJugadores(jugadores,numjug,escaleras,resvaladeras,tablero,tamx,tamy,numeros,poss,posiciontablero,TP);
-            jugarMapaJugadores(jugadores,numjug,escaleras,resvaladeras,tablero,tamx,tamy,numeros,poss,jugadas,jugs);
+            presentarJugadores (jugadores, numjug);
+            opc=0;
+
         }
+
+        if(opc == 2)
+        {
+            PosicionJugadores (jugadores, numjug);
+            opc=0;
+        }
+        if(opc == 3)
+        {
+            vistaTablero(tablero,tam);
+            opc=0;
+        }
+        if(opc == 4)
+        {
+            cout<<endl<<"Cantidad de jugadas: ";
+            cin>>n;
+            jugarMapaJugadores( jugadores, numjug, tablero,tam, poss, jugadas, n);
+
+            opc=0;
+        }
+        if(opc == 5)
+        {
+            presentarJugadoresClasificados (jugadores, numjug);
+        }
+        if(opc==6)
+        {
+            salir=true;
+        }
+
     }
+    while (salir == false);
 }
+
+
 void datosJugadores (struct player jugadores [maxin],int numjug)
 {
 
@@ -127,21 +170,60 @@ void datosJugadores (struct player jugadores [maxin],int numjug)
         }
     }
 }
-void mapaJugadores(struct player jugadores [maxin],int numjug, struct mapa escaleras[maxin],struct mapa resvaladeras[maxin], string tablero[maxin][maxin],int tamx,int tamy,int numeros[maxin][maxin],struct posi poss[maxin],struct mapa posiciontablero[maxin],int TP)
+void presentarJugadores (struct player jugadores [maxin],int numjug)
+{
+    for(int i=0; i< numjug; i++)
+    {
+        cout<<"Jugador #"<<i<<endl;
+        cout<<"Nombre: "<<jugadores[i].nombre<<endl;
+        cout<<"Edad: "<<jugadores[i].edad<<endl;
+        cout<<"Genero: "<<jugadores[i].genero<<endl;
+        cout<<"Color: "<<jugadores[i].color<<endl;
+    }
+}
+void PosicionJugadores (struct player jugadores [maxin],int numjug)
+{
+    for(int i=0; i<numjug; i++)
+    {
+        cout<<"Jugador #"<<i<<endl;
+        cout<<"Nombre: "<<jugadores[i].nombre<<endl;
+        cout<<"Con la ficha de color: "<<jugadores[i].color<<" esta en la posicion: " <<jugadores[i].posjug<<endl;
+
+    }
+}
+void presentarJugadoresClasificados (struct player jugadores [maxin],int numjug)
+{
+    for(int i=0; i< numjug; i++)
+    {
+        cout<<"Jugador #"<<i<<endl;
+        cout<<"Nombre: "<<jugadores[i].nombre<<endl;
+        cout<<"Con la ficha de color: "<<jugadores[i].color<<" esta en la posicion: " <<jugadores[i].posjug<<endl;
+        if(jugadores[i].ganador == true)
+        {
+            cout<<"Gano la partida"<<endl;
+        }
+        else
+        {
+            cout<<"No ha ganado la partida"<<endl;
+        }
+
+    }
+}
+void mapaJugadores(struct player jugadores [maxin],int numjug, struct maps tablero[][maxin],int tam,struct posi poss[maxin],struct mapa posiciontablero[maxin],int TP)
 {
     int possic= 0;
     int contador = 1;
     int casillasResvalas =0, casillasEscaleras=0;
 
-    for (int i = 0; i < tamx; i++)
+    for (int i = 0; i < tam; i++)
     {
 
         if (i%2 == 0)   // Ascendente en pares
         {
-            for (int j = 0; j < tamy; j++)
+            for (int j = 0; j < tam; j++)
             {
 
-                numeros[i][j] = contador;
+                tablero[i][j].numero = contador;
                 poss[contador].numero= contador;
                 poss[contador].x= i;
                 poss[contador].y= j;
@@ -151,9 +233,9 @@ void mapaJugadores(struct player jugadores [maxin],int numjug, struct mapa escal
         }
         else     // Descendente en impares
         {
-            for (int j = tamy-1; j >= 0; j--)
+            for (int j = tam-1; j >= 0; j--)
             {
-                numeros[i][j] = contador;
+                tablero[i][j].numero = contador;
                 poss[contador].numero= contador;
                 poss[contador].x= i;
                 poss[contador].y= j;
@@ -165,113 +247,221 @@ void mapaJugadores(struct player jugadores [maxin],int numjug, struct mapa escal
     {
         if(posiciontablero[i].codigo == "Escalera")
         {
-            escaleras[i].posini = posiciontablero[i].posini;
-            escaleras[i].posfinal = posiciontablero[i].posfinal;
-            escaleras[i].codigoinicio = "Es";
-            escaleras[i].codigobajada = "Et";
-            for(int x=0; x<tamx*tamy; x++)
+            for(int j=0; j<tam*tam; j++)
             {
-                if(escaleras[i].posini == poss[x].numero)
+                if(posiciontablero[i].posini == poss[j].numero)
                 {
-                    tablero[poss[x].x][poss[x].y]=escaleras[i].codigoinicio;
-                }
-                if(escaleras[i].posfinal ==poss[x].numero)
-                {
-                    tablero[poss[x].x][poss[x].y]=escaleras[i].codigobajada;
+                    for(int x=0; x<tam; x++)
+                    {
+                        for(int y=0; y<tam; y++)
+                        {
+                            if(tablero[x][y].numero == posiciontablero[i].posini )
+                            {
+                                tablero[x][y].codigo ='E';
+                                tablero[x][y].posfinal = posiciontablero[i].posfinal;
+                                tablero[x][y].xfinal = poss[j].x;
+                                tablero[x][y].yfinal = poss[j].y;
+                            }
+                        }
+                    }
+
                 }
             }
-
         }
         if(posiciontablero[i].codigo == "Rodadero")
         {
-            resvaladeras[i].posini = posiciontablero[i].posini;
-            resvaladeras[i].posfinal = posiciontablero[i].posfinal;
-            resvaladeras[i].codigoinicio = "Rb";
-            resvaladeras[i].codigobajada = "Rt";
-            for(int x=0; x<tamx*tamy; x++)
+            for(int j=0; j<tam*tam; j++)
             {
-                if(resvaladeras[i].posini == poss[x].numero)
+                if(posiciontablero[i].posini == poss[j].numero)
                 {
-                    tablero[poss[x].x][poss[x].y]=resvaladeras[i].codigoinicio;
-                }
-                if(resvaladeras[i].posfinal ==poss[x].numero)
-                {
-                    tablero[poss[x].x][poss[x].y]=resvaladeras[i].codigobajada;
+                    for(int x=0; x<tam; x++)
+                    {
+                        for(int y=0; y<tam; y++)
+                        {
+                            if(tablero[x][y].numero == posiciontablero[i].posini )
+                            {
+                                tablero[x][y].codigo ='R';
+                                tablero[x][y].posfinal = posiciontablero[i].posfinal;
+                                tablero[x][y].xfinal = poss[j].x;
+                                tablero[x][y].yfinal = poss[j].y;
+                            }
+                        }
+                    }
+
                 }
             }
         }
+
     }
-
-
 }
 
-void vistaTablero(string tablero[maxin][maxin],int tamx,int tamy,struct maps jugs[maxin] )
+void vistaTablero(struct maps tablero[][maxin],int tam)
 {
-    for(int x=0; x<tamx; x++)
+    for(int x=0; x<tam; x++)
     {
 
-        for(int y=0; y<tamy; y++)
+        for(int y=0; y<tam; y++)
         {
-            cout<<"|"<<setw(5)<<tablero[x][y];//<<jugs[0].ju<<jugs[1].ju<<jugs[2].ju<<jugs[3].ju;
+            cout<<"|"<<setw(2)<<tablero[x][y].numero<<"|"<<setw(2)<<tablero[x][y].codigo<<"|"<<setw(2)<<tablero[x][y].posfinal<<tablero[x][y].jug1<<tablero[x][y].jug2<<tablero[x][y].jug3<<tablero[x][y].jug4;
         }
-        cout<<"_";
+
         cout<<endl;
     }
 }
-void jugarMapaJugadores(struct player jugadores [maxin],int numjug, struct mapa escaleras[maxin],struct mapa resvaladeras[maxin], string tablero[maxin][maxin],int tamx,int tamy,int numeros[maxin][maxin],struct posi poss[maxin], struct jugador jugadas[maxin],struct maps jugs[maxin])
+void jugarMapaJugadores(struct player jugadores [maxin],int numjug,struct maps tablero[maxin][maxin],int tam,struct posi poss[maxin], struct jugador jugadas[maxin],int n)
 {
-    string opci;
-    int dado1=0,xsalido=tamx * tamy,ysalido=0,posfast=0;
+    int dado1=0,xsalido=tam * tam,ysalido=0,posfast=n;
     bool ganador= false;
     do
     {
 
         for(int i=0; i<numjug; i++)
         {
-            //system("cls");
-            vistaTablero(tablero,tamx,tamy, jugs);
-            cout<<"El jugador con la ficha: "<<jugadores[i].color<<" juega"<<endl;
-            cout<<"Tirar dado? si/no"<<endl;
-            cin>>opci;
-            if(opci == "si")
-            {
-                tablero[jugadores[i].posx][jugadores[i].posy] = " ";
-                if(jugadas[posfast].color == jugadores[i].color)
-                {
-                    dado1 = jugadas[posfast].dado;
-                }
-                cout<<"vas a moverte "<<dado1<<" posiciones"<<endl;
-//Sleep(1000);
-                jugadores[i].posjug = jugadores[i].posjug + dado1;
-                for(int h=0; h<10; h++)
-                {
-                    if(jugadores[i].posjug == escaleras[h].posini)
-                    {
-                        jugadores[i].posjug = escaleras[h].posfinal;
-                    }
-                }
-                for(int h =0; h<7; h++)
-                {
-                    if(jugadores[i].posjug == resvaladeras[h].posini)
-                    {
-                        jugadores[i].posjug = resvaladeras[h].posfinal;
-                    }
-                }
-                buscarposi(numeros,jugadores,tamx,tamy,poss);
-                jugs[i].ju = jugadores[i].codigo;
-                tablero[jugadores[i].posx][jugadores[i].posy] = jugadores[i].codigo;
-                if(jugadores[i].posjug >= xsalido)
-                {
-                    jugadores[i].ganador=true;
-                    ganador=true;
-                }
-                if(posfast >= 21)
-                {
-                    ganador=true;
-                }
+             //system("cls");
 
+            cout<<"El jugador con la ficha: "<<jugadores[i].color<<" juega"<<endl;
+            if(jugadas[posfast].color == jugadores[i].color)
+            {
+                dado1 = jugadas[posfast].dado;
             }
+//Sleep(1000);
+            jugadores[i].posjug = jugadores[i].posjug + dado1;
+
+            for(int x=0; x<tam; x++)
+            {
+                for(int y=0; y<tam; y++)
+                {
+                    if(tablero[x][y].numero == jugadores[i].posjug)
+                    {
+                        if("Blanco"== jugadores[i].color)
+                        {
+                            tablero[jugadores[i].posx][jugadores[i].posy].jug1 = ' ';
+
+                            if( tablero[x][y].posfinal != 0)
+                            {
+                                jugadores[i].posjug = tablero[x][y].numero;
+                                jugadores[i].posx=tablero[x][y].xfinal;
+                                jugadores[i].posy=tablero[x][y].yfinal;
+                                tablero[jugadores[i].posx][jugadores[i].posy].jug1 =jugadores[i].codigo;
+                            }
+                            if(tablero[x][y].posfinal == 0 )
+                            {
+                                int tami= tam*tam;
+                                for(int i = 0; i < tam; i++ )
+                                {
+                                    for(int j = 0; j < tami; j++)
+                                    {
+                                        if(poss[j].numero == jugadores[i].posjug)
+                                        {
+                                            jugadores[i].posjug = tablero[x][y].numero;
+                                            jugadores[i].posx=poss[j].x;
+                                            jugadores[i].posy=poss[j].y;
+                                            tablero[jugadores[i].posx][jugadores[i].posy].jug1 =jugadores[i].codigo;
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                        if("Azul"== jugadores[i].color)
+                        {
+
+                            if( tablero[x][y].posfinal != 0)
+                            {
+                                jugadores[i].posjug = tablero[x][y].numero;
+                                jugadores[i].posx=tablero[x][y].xfinal;
+                                jugadores[i].posy=tablero[x][y].yfinal;
+                            }
+                            if(tablero[x][y].posfinal == 0 )
+                            {
+                                int tami= tam*tam;
+                                for(int i = 0; i < tam; i++ )
+                                {
+                                    for(int j = 0; j < tami; j++)
+                                    {
+                                        if(poss[j].numero == jugadores[i].posjug)
+                                        {
+                                            jugadores[i].posjug = tablero[x][y].numero;
+                                            jugadores[i].posx=poss[j].x;
+                                            jugadores[i].posy=poss[j].y;
+                                        }
+                                    }
+                                }
+
+                            }
+                            tablero[jugadores[i].posx][jugadores[i].posy].jug2 =jugadores[i].codigo;
+                        }
+                        if("Verde"== jugadores[i].color)
+                        {
+                            tablero[jugadores[i].posx][jugadores[i].posy].jug3 = ' ';
+                            if( tablero[x][y].posfinal != 0)
+                            {
+                                jugadores[i].posjug = tablero[x][y].numero;
+                                jugadores[i].posx=tablero[x][y].xfinal;
+                                jugadores[i].posy=tablero[x][y].yfinal;
+                            }
+                            if(tablero[x][y].posfinal == 0 )
+                            {
+                                int tami= tam*tam;
+                                for(int i = 0; i < tam; i++ )
+                                {
+                                    for(int j = 0; j < tami; j++)
+                                    {
+                                        if(poss[j].numero == jugadores[i].posjug)
+                                        {
+                                            jugadores[i].posjug = tablero[x][y].numero;
+                                            jugadores[i].posx=poss[j].x;
+                                            jugadores[i].posy=poss[j].y;
+                                        }
+                                    }
+                                }
+
+                            }
+                            tablero[jugadores[i].posx][jugadores[i].posy].jug3 =jugadores[i].codigo;
+                        }
+                        if("Rojo"== jugadores[i].color)
+                        {
+                            tablero[jugadores[i].posx][jugadores[i].posy].jug4 = ' ';
+                            if( tablero[x][y].posfinal != 0)
+                            {
+                                jugadores[i].posjug = tablero[x][y].numero;
+                                jugadores[i].posx=tablero[x][y].xfinal;
+                                jugadores[i].posy=tablero[x][y].yfinal;
+                            }
+                            if(tablero[x][y].posfinal == 0 )
+                            {
+                                int tami= tam*tam;
+                                for(int i = 0; i < tam; i++ )
+                                {
+                                    for(int j = 0; j < tami; j++)
+                                    {
+                                        if(poss[j].numero == jugadores[i].posjug)
+                                        {
+                                            jugadores[i].posjug = tablero[x][y].numero;
+                                            jugadores[i].posx=poss[j].x;
+                                            jugadores[i].posy=poss[j].y;
+                                        }
+                                    }
+                                }
+
+                            }
+                            tablero[jugadores[i].posx][jugadores[i].posy].jug4 =jugadores[i].codigo;
+                        }
+                    }
+                }
+            }
+            vistaTablero(tablero,tam);
+            if(jugadores[i].posjug >= xsalido)
+            {
+                jugadores[i].ganador=true;
+                ganador=true;
+            }
+
             posfast = posfast +1;
+            if(posfast >= n)
+            {
+                ganador=true;
+            }
         }
 
     }
@@ -284,27 +474,12 @@ void jugarMapaJugadores(struct player jugadores [maxin],int numjug, struct mapa 
             {
                 cout<<"El ganador es la ficha con el color: "<<jugadores[i].color<<endl;
             }
-            if(jugadores[i].ganador == false){
+            if(jugadores[i].ganador == false)
+            {
                 cout<<"El jugador con la ficha de color "<< jugadores[i].color<<" no ha ganado: "<<endl;
             }
         }
     }
 }
-void buscarposi(int numeros[maxin][maxin],struct player jugadores [maxin],int tamx, int tamy,struct posi poss[maxin])
-{
-    int tam= tamx*tamy;
-    for(int i = 0; i < tamx; i++ )
-    {
-        for(int j = 0; j < tam; j++)
-        {
-            if(poss[j].numero == jugadores[i].posjug)
-            {
-                jugadores[i].posx=poss[j].x;
-                jugadores[i].posy=poss[j].y;
-            }
 
-
-        }
-    }
-}
 
